@@ -43,6 +43,11 @@ def _perform_search(app, link, bar):
 def _combine_results(results: List[SearchResult]) -> List[CombinedSearchResult]:
     combined: Dict[str, List[SearchResult]] = {}
     for item in results:
+        # Check if title is None or not a string and provide a default value or skip
+        if not item.title or not isinstance(item.title, str):
+            logger.warning("Invalid title for item: %s", item)
+            continue  # Skip this item or you can set a default title like 'untitled'
+        
         key = slugify(item.title)
         if len(key) <= 2:
             continue
@@ -62,6 +67,7 @@ def _combine_results(results: List[SearchResult]) -> List[CombinedSearchResult]:
 
     processed.sort(key=lambda x: -len(x.novels))
     return processed[:15]  # Control the number of results
+
 
 
 def search_novels(app):
